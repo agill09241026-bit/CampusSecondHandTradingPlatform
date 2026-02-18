@@ -6,12 +6,14 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
 
-    <!--数据源-->
+    <!--数据源：修复 MySQL 8.0 驱动和时区参数 -->
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/no162_secondshop?characterEncoding=UTF-8"/>
+        <!-- 关键修改1：MySQL 8.0 必须用 com.mysql.cj.jdbc.Driver -->
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <!-- 关键修改2：添加 serverTimezone=UTC 解决时区报错 -->
+        <property name="url" value="jdbc:mysql://localhost:3306/no162_secondshop?characterEncoding=UTF-8&amp;serverTimezone=UTC"/>
         <property name="username" value="root"/>
-        <property name="password" value="123456"/>
+        <property name="password" value="1725704661"/>
         <property name="maxActive" value="10"/>
         <property name="maxIdle" value="2"/>
         <property name="maxWait" value="12000"/>
@@ -39,8 +41,9 @@
         </property>
     </bean>
 
+    <!-- 关键修改3：修复 Mapper 扫描包名（SecShop 改成 secondshop，和代码包名一致） -->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-    <property name="basePackage" value="com.wzh.SecShop.mappers" />
+        <property name="basePackage" value="com.wzh.secondshop.mappers" />
     </bean>
 
     <bean id="userMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
